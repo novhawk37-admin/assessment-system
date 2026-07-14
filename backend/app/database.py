@@ -7,7 +7,7 @@ load_dotenv()
 
 DATABASE_URL = os.getenv(
     "DATABASE_URL",
-    "postgresql://novhawk_user:g5TUMficxI0C8QaHIyrGPvLr3v6pGGwJ@dpg-d9b6lsgqmsqc73ee9nq0-a/novhawk",
+    "postgresql+psycopg://novhawk_user:g5TUMficxI0C8QaHIyrGPvLr3v6pGGwJ@dpg-d9b6lsgqmsqc73ee9nq0-a/novhawk",
 )
 
 engine = create_engine(
