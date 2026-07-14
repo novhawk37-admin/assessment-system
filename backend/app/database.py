@@ -10,6 +10,13 @@ DATABASE_URL = os.getenv(
     "postgresql+psycopg://novhawk_user:g5TUMficxI0C8QaHIyrGPvLr3v6pGGwJ@dpg-d9b6lsgqmsqc73ee9nq0-a/novhawk",
 )
 
+if DATABASE_URL.startswith("postgresql://"):
+    DATABASE_URL = DATABASE_URL.replace(
+        "postgresql://",
+        "postgresql+psycopg://",
+        1
+    )
+
 engine = create_engine(
     DATABASE_URL,
     connect_args={
