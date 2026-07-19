@@ -77,20 +77,156 @@ class TaskOut(BaseModel):
 
 
 # ---------- Assessments ----------
-class AssessmentCreate(BaseModel):
-    name: str
-    type: AssessmentType
-    score: float
-    user_id: Optional[int] = None
+class AssessmentBase(BaseModel):
+    title: str
+    description: Optional[str] = None
+    assessment_type: Optional[str] = None
+    duration: int
+    total_marks: int = 0
+    passing_marks: int = 0
 
 
-class AssessmentOut(BaseModel):
+class AssessmentCreate(AssessmentBase):
+    pass
+
+
+class AssessmentUpdate(BaseModel):
+    title: Optional[str] = None
+    description: Optional[str] = None
+    assessment_type: Optional[str] = None
+    duration: Optional[int] = None
+    total_marks: Optional[int] = None
+    passing_marks: Optional[int] = None
+
+class AssignAssessment(BaseModel):
+    assessment_id: int
+    user_ids: list[int]
+
+# ---------- Questions ----------
+class QuestionBase(BaseModel):
+    assessment_id: int
+    question: str
+
+    option_a: str
+    option_b: str
+    option_c: str
+    option_d: str
+
+    correct_answer: str
+    marks: Optional[int] = 1
+
+
+class QuestionCreate(QuestionBase):
+    pass
+
+
+class QuestionUpdate(BaseModel):
+    question: Optional[str] = None
+
+    option_a: Optional[str] = None
+    option_b: Optional[str] = None
+    option_c: Optional[str] = None
+    option_d: Optional[str] = None
+
+    correct_answer: Optional[str] = None
+    marks: Optional[int] = None
+
+
+class QuestionOut(QuestionBase):
     id: int
-    name: str
-    type: AssessmentType
-    score: float
-    user_id: Optional[int] = None
-    taken_at: datetime
+
+    class Config:
+        from_attributes = True
+
+class QuestionResponse(BaseModel):
+    id: int
+    question: str
+
+    option_a: str
+    option_b: str
+    option_c: str
+    option_d: str
+
+    marks: int
+    correct_answer: str | None = None
+
+    class Config:
+        from_attributes = True
+
+class AssessmentResponse(BaseModel):
+    id: int
+    title: str
+    description: str | None = None
+    duration: int
+    questions: list[QuestionResponse]
+
+    class Config:
+        from_attributes = True
+
+class AnswerSubmit(BaseModel):
+    question_id: int
+    selected_answer: str
+
+
+class AssessmentSubmit(BaseModel):
+    answers: List[AnswerSubmit]
+
+# ---------- User Assessment ----------
+class UserAssessmentBase(BaseModel):
+    user_id: int
+    assessment_id: int
+
+    score: Optional[int] = 0
+    total_questions: Optional[int] = 0
+    correct_answers: Optional[int] = 0
+
+    status: Optional[str] = "Not Started"
+
+    started_at: Optional[datetime] = None
+    submitted_at: Optional[datetime] = None
+
+
+class UserAssessmentCreate(UserAssessmentBase):
+    pass
+
+
+class UserAssessmentUpdate(BaseModel):
+    score: Optional[int] = None
+    total_questions: Optional[int] = None
+    correct_answers: Optional[int] = None
+
+    status: Optional[str] = None
+
+    started_at: Optional[datetime] = None
+    submitted_at: Optional[datetime] = None
+
+
+class UserAssessmentOut(UserAssessmentBase):
+    id: int
+
+    class Config:
+        from_attributes = True
+
+# ---------- User Answer ----------
+class UserAnswerBase(BaseModel):
+    user_assessment_id: int
+    question_id: int
+
+    selected_answer: Optional[str] = None
+    is_correct: Optional[bool] = False
+
+
+class UserAnswerCreate(UserAnswerBase):
+    pass
+
+
+class UserAnswerUpdate(BaseModel):
+    selected_answer: Optional[str] = None
+    is_correct: Optional[bool] = None
+
+
+class UserAnswerOut(UserAnswerBase):
+    id: int
 
     class Config:
         from_attributes = True

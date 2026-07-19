@@ -1,5 +1,5 @@
 import React from 'react'
-import { Bell, LogOut, ChevronDown } from 'lucide-react'
+import { LogOut, ChevronDown } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import { useNavigate } from 'react-router-dom'
 
@@ -9,8 +9,15 @@ export default function Topbar({ title, subtitle, children }) {
   const [menuOpen, setMenuOpen] = React.useState(false)
 
   function handleLogout() {
-    logout()
-    navigate('/login')
+    console.log("Logout clicked");
+
+    logout();
+
+    console.log("After logout");
+
+    navigate("/", { replace: true });
+
+    console.log("Navigation done");
   }
 
   return (
@@ -22,13 +29,6 @@ export default function Topbar({ title, subtitle, children }) {
       <div className="flex items-center gap-4">
 
         {children}
-
-        <button className="relative w-10 h-10 rounded-full bg-white shadow-card flex items-center justify-center">
-          <Bell size={18} className="text-ink-700" />
-          <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-red-500 text-white text-[10px] flex items-center justify-center">
-            3
-          </span>
-        </button>
 
         <div className="relative">
           <button
