@@ -41,11 +41,11 @@ def user_dashboard(
     )
 
     assessments = (
-        db.query(models.Assessment).filter(models.Assessment.user_id == current_user.id).all()
+        db.query(models.UserAssessment).filter(models.UserAssessment.user_id == current_user.id).all()
     )
     assessments_completed = len(assessments)
     assessments_completed_this_week = len(
-        [a for a in assessments if a.taken_at and a.taken_at >= week_ago]
+        [a for a in assessments if a.submitted_at and a.submitted_at >= week_ago]
     )
     average_assessment_score = (
         round(sum(a.score for a in assessments) / len(assessments), 1) if assessments else 0
@@ -53,7 +53,13 @@ def user_dashboard(
 
     breakdown = defaultdict(list)
     for a in assessments:
-        breakdown[a.type.value if hasattr(a.type, "value") else a.type].append(a.score)
+        assessment_type = (
+            a.assessment.assessment_type
+            if a.assessment and a.assessment.assessment_type
+            else "Unknown"
+        )
+
+        breakdown[assessment_type].append(a.score)
     assessment_breakdown = [
         {"type": t, "score": round(sum(v) / len(v), 1)} for t, v in breakdown.items()
     ]
@@ -101,10 +107,10 @@ def admin_dashboard(
     completed_tasks = [t for t in all_tasks if t.status == models.TaskStatus.completed]
     completion_rate = round((len(completed_tasks) / total_tasks * 100), 1) if total_tasks else 0
 
-    all_assessments = db.query(models.Assessment).all()
+    all_assessments = db.query(models.UserAssessment).all()
     assessments_conducted = len(all_assessments)
     assessments_conducted_this_week = len(
-        [a for a in all_assessments if a.taken_at and a.taken_at >= week_ago]
+        [a for a in all_assessments if a.submitted_at and a.submitted_at >= week_ago]
     )
 
     # Task overview: last 7 days, assigned vs completed counts per day
@@ -132,8 +138,14 @@ def admin_dashboard(
 
     # Assessment analytics: totals per type
     type_counts = defaultdict(int)
+
     for a in all_assessments:
-        type_counts[a.type.value if hasattr(a.type, "value") else a.type] += 1
+        assessment_type = (
+            a.assessment.assessment_type
+            if a.assessment and a.assessment.assessment_type
+            else "Unknown"
+        )
+        type_counts[assessment_type] += 1
     assessment_analytics = [{"type": t, "count": c} for t, c in type_counts.items()]
 
     # Top performing users: blend of task completion rate + avg assessment score
