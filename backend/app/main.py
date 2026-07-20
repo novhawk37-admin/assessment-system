@@ -4,7 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
 
 from app.database import Base, engine
-from app.routers import auth, tasks, assessments, users, dashboard, user_assessments, questions
+from app.routers import auth, tasks, assessments, users, dashboard, user_assessments, questions, user_answers
 
 load_dotenv()
 
@@ -33,6 +33,7 @@ app.include_router(users.router)
 app.include_router(dashboard.router)
 app.include_router(user_assessments.router)
 app.include_router(questions.router)
+app.include_router(user_answers.router)
 
 
 @app.get("/api/health")
