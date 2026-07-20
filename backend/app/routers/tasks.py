@@ -64,7 +64,7 @@ def create_task(
 
 @router.put("/{task_id}", response_model=schemas.TaskOut)
 def update_task(
-    task_id: str,
+    task_id: int,
     payload: schemas.TaskUpdate,
     db: Session = Depends(get_db),
     current_user: models.User = Depends(get_current_user),
