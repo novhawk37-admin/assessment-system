@@ -90,7 +90,7 @@ def update_task(
 
 @router.delete("/{task_id}")
 def delete_task(
-    task_id: str,
+    task_id: int,
     db: Session = Depends(get_db),
     current_user: models.User = Depends(require_admin),
 ):
