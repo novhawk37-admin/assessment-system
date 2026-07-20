@@ -4,7 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
 
 from app.database import Base, engine
-from app.routers import auth, tasks, assessments, users, dashboard
+from app.routers import auth, tasks, assessments, users, dashboard, user_assessments
 
 load_dotenv()
 
@@ -13,7 +13,10 @@ Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="NovHawk API", version="1.0.0")
 
-origins = os.getenv("CORS_ORIGINS", "http://localhost:5173").split(",")
+origins = [
+    "http://localhost:5173",
+    "https://novhawk-assessment.vercel.app",  # if deployed
+]
 
 app.add_middleware(
     CORSMiddleware,
@@ -28,6 +31,7 @@ app.include_router(tasks.router)
 app.include_router(assessments.router)
 app.include_router(users.router)
 app.include_router(dashboard.router)
+app.include_router(user_assessments.router)
 
 
 @app.get("/api/health")
