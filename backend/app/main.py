@@ -15,7 +15,7 @@ app = FastAPI(title="NovHawk API", version="1.0.0")
 
 origins = [
     "http://localhost:5173",
-    "https://novhawk-assessment.vercel.app/",  # if deployed
+    "https://novhawk-assessment.vercel.app",  # if deployed
 ]
 
 app.add_middleware(
