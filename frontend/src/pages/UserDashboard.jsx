@@ -31,6 +31,7 @@ export default function UserDashboard() {
   const [usingMock, setUsingMock] = useState(offline)
   const navigate = useNavigate();
   const [showCalendar, setShowCalendar] = useState(false);
+  const [hoverTask, setHoverTask] = useState(null);
 
   useEffect(() => {
     if (offline) {
@@ -186,54 +187,114 @@ export default function UserDashboard() {
       </div>
       {showCalendar && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-2xl p-6 w-[90%] max-w-3xl relative">
+          <div className="relative bg-white rounded-3xl shadow-2xl p-6 flex gap-8 w-[950px] min-h-[520px]">
             <button
-              onClick={() => setShowCalendar(false)}
-              className="absolute top-4 right-4 text-gray-500 hover:text-black text-xl"
+              onClick={() => {
+                setShowCalendar(false);
+                setHoverTask(null);
+              }}
+              className="absolute top-5 right-5 text-xl"
             >
               ✕
             </button>
 
-            <h2 className="text-xl font-bold mb-4">Task Calendar</h2>
+            <div className="bg-white rounded-2xl p-6 w-[770px]">
+              <h2 className="text-lg font-semibold mb-3">
+                Task Calendar
+              </h2>
 
-            {data.upcoming_deadlines.length === 0 ? (
-              <div className="flex items-center justify-center h-72">
-                <p className="text-gray-500 text-lg font-medium">
-                  No deadlines available 🎉
-                </p>
-              </div>
-            ) : (
-              <Calendar
-                tileClassName={({ date }) => {
-                  const hasDeadline = data.upcoming_deadlines.some(
-                    (task) =>
-                      new Date(task.due_date).toDateString() === date.toDateString()
-                  );
 
-                  return hasDeadline ? "deadline-date" : "";
-                }}
-                tileContent={({ date }) => {
-                  const tasks = data.upcoming_deadlines.filter(
-                    (task) =>
-                      new Date(task.due_date).toDateString() === date.toDateString()
-                  );
+              {data.upcoming_deadlines.length === 0 ? (
+                <div className="flex items-center justify-center h-72">
+                  <p className="text-gray-500 text-lg font-medium">
+                    No deadlines available 🎉
+                  </p>
+                </div>
+              ) : (
+                <div className="flex items-center justify-center gap-10">
 
-                  if (!tasks.length) return null;
+                  <Calendar
+                    onMouseLeave={() => setHoverTask(null)}
+                    tileClassName={({ date }) => {
+                      const task = data.upcoming_deadlines.find(
+                        (t) =>
+                          new Date(t.due_date).toDateString() === date.toDateString()
+                      );
 
-                  return (
-                    <div
-                      title={tasks.map((t) => t.title).join("\n")}
-                      className="text-red-600 text-center text-xs"
-                    >
-                      ●
-                    </div>
-                  );
-                }}
-              />
-            )}
+                      if (!task) return "";
+
+                      const today = new Date();
+                      today.setHours(0, 0, 0, 0);
+
+                      const due = new Date(task.due_date);
+                      due.setHours(0, 0, 0, 0);
+
+                      return due < today
+                        ? "calendar-overdue"
+                        : "calendar-upcoming";
+                    }}
+                    tileContent={({ date }) => {
+                      const task = data.upcoming_deadlines.find(
+                        (t) =>
+                          new Date(t.due_date).toDateString() === date.toDateString()
+                      );
+
+                      if (!task) return null;
+
+                      return (
+                        <div
+                          className="absolute inset-0 cursor-pointer"
+                          onMouseEnter={() => setHoverTask(task)}
+                        />
+                      );
+                    }}
+                  />
+
+                  <div className="w-72">
+                    {hoverTask ? (
+                      <div className="rounded-2xl border shadow-lg p-6 bg-white">
+                        <h3 className="text-xl font-bold">
+                          {hoverTask.title}
+                        </h3>
+
+                        <p className="mt-5 text-gray-400 text-sm">
+                          DUE DATE
+                        </p>
+
+                        <p>
+                          {new Date(hoverTask.due_date).toLocaleDateString()}
+                        </p>
+
+                        <span
+                          className={`inline-block mt-4 px-4 py-1 rounded-full text-sm ${new Date(hoverTask.due_date) < new Date()
+                              ? "bg-red-100 text-red-600"
+                              : "bg-green-100 text-green-600"
+                            }`}
+                        >
+                          {new Date(hoverTask.due_date) < new Date()
+                            ? "Overdue"
+                            : "Upcoming"}
+                        </span>
+
+                        <p className="text-gray-400 mt-5">
+                          Description
+                        </p>
+
+                        <p>{hoverTask.description}</p>
+                      </div>
+                    ) : (
+                      <div className="rounded-2xl border shadow-lg p-6 bg-white text-center text-gray-500">
+                        Hover over a highlighted date
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       )}
+
     </DashboardLayout>
-  )
+  );
 }
