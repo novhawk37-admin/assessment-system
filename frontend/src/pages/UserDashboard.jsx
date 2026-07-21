@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import { useNavigate } from "react-router-dom";
 import { CalendarCheck, CheckCircle2, FileCheck2, TrendingUp, Circle, CalendarDays } from 'lucide-react'
 import DashboardLayout from '../components/DashboardLayout'
 import Topbar from '../components/Topbar'
@@ -7,6 +8,8 @@ import DonutChart from '../components/DonutChart'
 import client from '../api/client'
 import { useAuth } from '../context/AuthContext'
 import { mockUserDashboard } from '../mockData'
+import Calendar from "react-calendar";
+import "react-calendar/dist/Calendar.css";
 
 function formatDueLabel(dueDateStr) {
   if (!dueDateStr) return 'No due date'
@@ -26,6 +29,8 @@ export default function UserDashboard() {
   const { user, offline } = useAuth()
   const [data, setData] = useState(null)
   const [usingMock, setUsingMock] = useState(offline)
+  const navigate = useNavigate();
+  const [showCalendar, setShowCalendar] = useState(false);
 
   useEffect(() => {
     if (offline) {
@@ -102,7 +107,12 @@ export default function UserDashboard() {
         <div className="lg:col-span-1 bg-white rounded-2xl shadow-card p-5">
           <div className="flex items-center justify-between mb-4">
             <h2 className="font-bold text-ink-900">My Tasks</h2>
-            <button className="text-xs font-semibold text-primary-600">View All</button>
+            <button
+              onClick={() => navigate("/tasks")}
+              className="text-xs font-semibold text-primary-600 hover:text-primary-700"
+            >
+              View All
+            </button>
           </div>
           <div className="space-y-4">
             {data.my_tasks.length === 0 && (
@@ -127,7 +137,12 @@ export default function UserDashboard() {
         <div className="lg:col-span-1 bg-white rounded-2xl shadow-card p-5">
           <div className="flex items-center justify-between mb-4">
             <h2 className="font-bold text-ink-900">Assessment Overview</h2>
-            <button className="text-xs font-semibold text-primary-600">View All</button>
+            <button
+              onClick={() => navigate("/assessments")}
+              className="text-xs font-semibold text-primary-600 hover:text-primary-700"
+            >
+              View All
+            </button>
           </div>
           <DonutChart
             data={assessmentDonut.length ? assessmentDonut : [{ name: 'No data', value: 1 }]}
@@ -161,11 +176,64 @@ export default function UserDashboard() {
               </div>
             ))}
           </div>
-          <button className="w-full mt-4 text-sm font-semibold text-primary-600 border border-primary-100 rounded-xl py-2 hover:bg-primary-50">
+          <button
+            onClick={() => setShowCalendar(true)}
+            className="w-full mt-4 text-sm font-semibold text-primary-600 border border-primary-100 rounded-xl py-2 hover:bg-primary-50"
+          >
             View Calendar
           </button>
         </div>
       </div>
+      {showCalendar && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-2xl p-6 w-[90%] max-w-3xl relative">
+            <button
+              onClick={() => setShowCalendar(false)}
+              className="absolute top-4 right-4 text-gray-500 hover:text-black text-xl"
+            >
+              ✕
+            </button>
+
+            <h2 className="text-xl font-bold mb-4">Task Calendar</h2>
+
+            {data.upcoming_deadlines.length === 0 ? (
+              <div className="flex items-center justify-center h-72">
+                <p className="text-gray-500 text-lg font-medium">
+                  No deadlines available 🎉
+                </p>
+              </div>
+            ) : (
+              <Calendar
+                tileClassName={({ date }) => {
+                  const hasDeadline = data.upcoming_deadlines.some(
+                    (task) =>
+                      new Date(task.due_date).toDateString() === date.toDateString()
+                  );
+
+                  return hasDeadline ? "deadline-date" : "";
+                }}
+                tileContent={({ date }) => {
+                  const tasks = data.upcoming_deadlines.filter(
+                    (task) =>
+                      new Date(task.due_date).toDateString() === date.toDateString()
+                  );
+
+                  if (!tasks.length) return null;
+
+                  return (
+                    <div
+                      title={tasks.map((t) => t.title).join("\n")}
+                      className="text-red-600 text-center text-xs"
+                    >
+                      ●
+                    </div>
+                  );
+                }}
+              />
+            )}
+          </div>
+        </div>
+      )}
     </DashboardLayout>
   )
 }

@@ -14,3 +14,14 @@ body {
   background: #d8dae3;
   border-radius: 999px;
 }
+
+
+.deadline-date {
+  background: #ef4444 !important;
+  color: white !important;
+  border-radius: 9999px;
+}
+
+.react-calendar__tile:hover {
+  background: #fee2e2;
+}

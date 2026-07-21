@@ -33,11 +33,11 @@ export default function HomeDashboard() {
                         text-[#635BFF]
                         "
                     >
-                        NovHawk Assessment
+                        NovHawk
                     </h1>
 
                     <p className="text-sm text-gray-500">
-                        Smart Testing Platform
+                        New Tech Solution
                     </p>
                 </div>
 
