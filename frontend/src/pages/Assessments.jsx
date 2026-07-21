@@ -17,6 +17,9 @@ export default function Assessments() {
   const [assessments, setAssessments] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  const [showDisclaimer, setShowDisclaimer] = useState(false);
+  const [selectedAssessment, setSelectedAssessment] = useState(null);
+
   async function loadAssessments() {
     try {
       const url = isAdmin
@@ -52,11 +55,29 @@ export default function Assessments() {
     }
   }
 
+  function startAssessment(id) {
+    setSelectedAssessment(id);
+    setShowDisclaimer(true);
+  }
+
+  async function confirmStartTest() {
+    try {
+      if (!document.fullscreenElement) {
+        await document.documentElement.requestFullscreen();
+      }
+    } catch (err) {
+      console.log("Fullscreen error:", err);
+    }
+    setShowDisclaimer(false);
+    navigate(`/assessment-test/${selectedAssessment}`);
+  }
+
   return (
     <DashboardLayout>
       <Topbar
         title="Assessments"
         subtitle="Manage assessments and questions"
+        showBack
       />
 
       {isAdmin && (
@@ -191,7 +212,7 @@ export default function Assessments() {
 
                 {!isAdmin && (
                   <td className="text-center">
-                      {assessment.score ?? 0}
+                    {assessment.score ?? 0}
                   </td>
                 )}
 
@@ -229,9 +250,7 @@ export default function Assessments() {
                       /* Start Assessment */
                       <button
                         disabled={assessment.status?.toLowerCase() === "submitted"}
-                        onClick={() =>
-                          navigate(`/assessment-test/${assessment.id}`)
-                        }
+                        onClick={() => startAssessment(assessment.id)}
                         className={`px-4 py-2 rounded-lg text-white ${assessment.status?.toLowerCase() === "submitted"
                           ? "bg-gray-400 cursor-not-allowed"
                           : "bg-green-600 hover:bg-green-700"
@@ -255,6 +274,82 @@ export default function Assessments() {
         </table>
 
       </div>
+      {showDisclaimer && (
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
+          <div className="bg-white rounded-2xl shadow-xl w-full max-w-2xl mx-4">
+
+            {/* Header */}
+            <div className="border-b px-6 py-4">
+              <h2 className="text-2xl font-bold text-gray-800">
+                Assessment Instructions
+              </h2>
+            </div>
+
+            {/* Body */}
+            <div className="px-6 py-5 space-y-4 text-gray-700">
+
+              <p>
+                Please read the following instructions carefully before starting the
+                assessment.
+              </p>
+
+              <ul className="list-disc pl-6 space-y-3">
+                <li>
+                  The assessment will automatically enter <b>Full Screen Mode</b>.
+                </li>
+
+                <li>
+                  Do <b>not switch tabs</b>, minimize the browser, or open another
+                  application while taking the assessment.
+                </li>
+
+                <li>
+                  You are allowed a maximum of <b>3 tab-switch attempts</b>.
+                </li>
+
+                <li>
+                  If you exceed the allowed attempts, your assessment will be
+                  <span className="font-semibold text-red-600">
+                    {" "}submitted automatically.
+                  </span>
+                </li>
+
+                <li>
+                  Do not refresh or close the browser during the assessment.
+                </li>
+
+                <li>
+                  Ensure you have a stable internet connection before starting.
+                </li>
+
+                <li>
+                  Once submitted, you cannot retake the assessment.
+                </li>
+              </ul>
+
+            </div>
+
+            {/* Footer */}
+            <div className="flex justify-between items-center border-t px-6 py-4">
+
+              <button
+                onClick={() => setShowDisclaimer(false)}
+                className="px-5 py-2 rounded-lg border border-gray-300 hover:bg-gray-100"
+              >
+                Cancel
+              </button>
+
+              <button
+                onClick={confirmStartTest}
+                className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg font-semibold"
+              >
+                Start Test
+              </button>
+
+            </div>
+          </div>
+        </div>
+      )}
     </DashboardLayout>
   );
 }

@@ -8,7 +8,7 @@ import DonutChart from '../components/DonutChart'
 import TaskLineChart from '../components/TaskLineChart'
 import client from '../api/client'
 import { useAuth } from '../context/AuthContext'
-import { mockAdminDashboard } from '../mockData'
+// import { mockAdminDashboard } from '../mockData'
 
 function timeAgo(iso) {
   if (!iso) return ''
@@ -26,21 +26,21 @@ export default function AdminDashboard() {
   const [data, setData] = useState(null)
   const [usingMock, setUsingMock] = useState(offline)
 
-  useEffect(() => {
-    if (offline) {
-      setData(mockAdminDashboard)
-      return
-    }
-    client
-      .get('/api/dashboard/admin')
-      .then((res) => setData(res.data))
-      .catch((err) => {
-        if (!err.response) {
-          setUsingMock(true)
-          setData(mockAdminDashboard)
-        }
-      })
-  }, [offline])
+  // useEffect(() => {
+  //   if (offline) {
+  //     setData(mockAdminDashboard)
+  //     return
+  //   }
+  //   client
+  //     .get('/api/dashboard/admin')
+  //     .then((res) => setData(res.data))
+  //     .catch((err) => {
+  //       if (!err.response) {
+  //         setUsingMock(true)
+  //         setData(mockAdminDashboard)
+  //       }
+  //     })
+  // }, [offline])
 
   if (!data) {
     return (

@@ -5,8 +5,8 @@ import { useAuth } from '../context/AuthContext'
 export default function Login() {
   const { login } = useAuth()
   const navigate = useNavigate()
-  const [email, setEmail] = useState('vishnu@novhawk.com')
-  const [password, setPassword] = useState('password123')
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
 
@@ -43,6 +43,7 @@ export default function Login() {
             <input
               type="email"
               value={email}
+              placeholder="yourname@novhawk.com"
               onChange={(e) => setEmail(e.target.value)}
               required
               className="mt-1 w-full px-3 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
@@ -53,6 +54,7 @@ export default function Login() {
             <input
               type="password"
               value={password}
+              placeholder="novhawk123"
               onChange={(e) => setPassword(e.target.value)}
               required
               className="mt-1 w-full px-3 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
@@ -70,11 +72,11 @@ export default function Login() {
           </button>
         </form>
 
-        <div className="mt-6 text-xs text-ink-500 bg-gray-50 rounded-xl p-3 space-y-1">
+        {/* <div className="mt-6 text-xs text-ink-500 bg-gray-50 rounded-xl p-3 space-y-1">
           <p className="font-semibold text-ink-700">Demo accounts (after seeding):</p>
           <p>Admin: admin@novhawk.com / admin123</p>
           <p>User: vishnu@novhawk.com / password123</p>
-        </div>
+        </div> */}
       </div>
     </div>
   )

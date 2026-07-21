@@ -1,9 +1,9 @@
 import React from 'react'
-import { LogOut, ChevronDown } from 'lucide-react'
+import { LogOut, ChevronDown, ArrowLeft } from "lucide-react";
 import { useAuth } from '../context/AuthContext'
 import { useNavigate } from 'react-router-dom'
 
-export default function Topbar({ title, subtitle, children }) {
+export default function Topbar({ title, subtitle, children, showBack = false }) {
   const { user, logout } = useAuth()
   const navigate = useNavigate()
   const [menuOpen, setMenuOpen] = React.useState(false)
@@ -22,9 +22,27 @@ export default function Topbar({ title, subtitle, children }) {
 
   return (
     <div className="flex items-center justify-between mb-6">
-      <div>
-        <h1 className="text-2xl font-extrabold text-ink-900">{title}</h1>
-        {subtitle && <p className="text-sm text-ink-500 mt-1">{subtitle}</p>}
+      <div className="flex items-start gap-3">
+        {showBack && (
+          <button
+            onClick={() => navigate(-1)}
+            className="mt-1 p-2 rounded-lg hover:bg-gray-100 transition"
+            title="Go Back"
+          >
+            <ArrowLeft size={20} />
+          </button>
+        )}
+
+        <div>
+          <h1 className="text-2xl font-extrabold text-ink-900">
+            {title}
+          </h1>
+          {subtitle && (
+            <p className="text-sm text-ink-500 mt-1">
+              {subtitle}
+            </p>
+          )}
+        </div>
       </div>
       <div className="flex items-center gap-4">
 

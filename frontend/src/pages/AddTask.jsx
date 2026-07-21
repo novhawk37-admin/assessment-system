@@ -62,7 +62,9 @@ export default function AddTask() {
 
   return (
     <DashboardLayout>
-      <Topbar title="Add New Task" subtitle="Assign a new task to a team member." />
+      <Topbar title="Add New Task" subtitle="Assign a new task to a team member."
+        showBack
+      />
 
       {offline && (
         <div className="mb-5 px-4 py-2.5 rounded-xl bg-orange-50 text-accent-orange text-sm font-medium">

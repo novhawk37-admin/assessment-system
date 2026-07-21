@@ -55,12 +55,20 @@ export default function App() {
 
       <Route
         path="/add-assessment"
-        element={<AddAssessment />}
+        element={
+          <ProtectedRoute requireAdmin>
+            <AddAssessment />
+          </ProtectedRoute>
+        }
       />
 
       <Route
         path="/add-assessment/:id"
-        element={<AddAssessment />}
+        element={
+          <ProtectedRoute requireAdmin>
+            <AddAssessment />
+          </ProtectedRoute>
+        }
       />
 
       <Route
@@ -74,7 +82,11 @@ export default function App() {
 
       <Route
         path="/assessment-result/:id"
-        element={<AssessmentResult />}
+        element={
+          <ProtectedRoute>
+            <AssessmentResult />
+          </ProtectedRoute>
+        }
       />
 
       <Route
@@ -135,7 +147,7 @@ export default function App() {
           </ProtectedRoute>
         }
       />
-      
+
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   )

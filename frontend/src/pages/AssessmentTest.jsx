@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
 import DashboardLayout from "../components/DashboardLayout";
@@ -26,7 +26,14 @@ export default function AssessmentTest() {
 
     const [answers, setAnswers] = useState({});
 
+    const ignoreFullscreenExit = useRef(false);
+
     const [submitted, setSubmitted] = useState(false);
+    const [violations, setViolations] = useState(0);
+    const [warning, setWarning] = useState("");
+    const [lastViolationTime, setLastViolationTime] = useState(0);
+
+    const MAX_VIOLATIONS = 3;
 
     useEffect(() => {
         loadAssessment();
@@ -91,6 +98,84 @@ export default function AssessmentTest() {
 
     }
 
+    useEffect(() => {
+        const handleVisibility = () => {
+            if (document.hidden && !submitted) {
+                handleViolation("You switched away from the assessment.");
+            }
+        };
+
+        document.addEventListener("visibilitychange", handleVisibility);
+
+        return () => {
+            document.removeEventListener(
+                "visibilitychange",
+                handleVisibility
+            );
+        };
+    }, [submitted, lastViolationTime]);
+
+
+    useEffect(() => {
+        const handleFullscreenChange = () => {
+            if (submitted) return;
+
+            if (ignoreFullscreenExit.current) {
+                ignoreFullscreenExit.current = false;
+                return;
+            }
+
+            if (!document.fullscreenElement) {
+                handleViolation("You exited Full Screen Mode.");
+            }
+        };
+
+        document.addEventListener("fullscreenchange", handleFullscreenChange);
+
+        return () => {
+            document.removeEventListener(
+                "fullscreenchange",
+                handleFullscreenChange
+            );
+        };
+    }, [submitted]);
+
+
+    const handleViolation = (reason) => {
+        if (submitted) return;
+
+        const now = Date.now();
+
+        // Ignore duplicate events within 2 seconds
+        if (now - lastViolationTime < 2000) return;
+
+        setLastViolationTime(now);
+
+        setViolations((prev) => {
+            const count = prev + 1;
+
+            if (count >= MAX_VIOLATIONS) {
+                setWarning(
+                    `Maximum violations (${MAX_VIOLATIONS}) reached.\n\nYour assessment will now be submitted automatically.`
+                );
+
+                setTimeout(() => {
+                    submitAssessment(true);
+                }, 1500);
+            } else {
+                setWarning(
+                    `${reason}
+
+Warning ${count}/${MAX_VIOLATIONS}
+
+Remaining Attempts: ${MAX_VIOLATIONS - count}`
+                );
+            }
+
+            return count;
+        });
+    };
+
     async function submitAssessment(autoSubmit = false) {
 
         if (submitted) return;
@@ -118,6 +203,11 @@ export default function AssessmentTest() {
 
             if (!autoSubmit) {
                 alert("Assessment Submitted Successfully");
+            }
+
+            if (document.fullscreenElement) {
+                ignoreFullscreenExit.current = true;
+                await document.exitFullscreen();
             }
 
             navigate(`/assessment-result/${id}`);
@@ -151,12 +241,70 @@ export default function AssessmentTest() {
 
     return (
 
-        <DashboardLayout>
+        <DashboardLayout hideSidebar>
 
-            <Topbar
-                title={assessment?.title}
-                subtitle={assessment?.description}
-            />
+            <div className="bg-white rounded-xl shadow p-5 mb-6 flex justify-between items-center">
+
+                <div>
+                    <h1 className="text-2xl font-bold">
+                        {assessment?.title}
+                    </h1>
+
+                    <p className="text-gray-500">
+                        {assessment?.description}
+                    </p>
+                </div>
+
+                <div className="flex items-center gap-6">
+
+                    <div className="text-red-600 font-semibold">
+                        Remaining Attempts: {MAX_VIOLATIONS - violations}
+                    </div>
+
+                    <Timer
+                        minutes={assessment?.duration || 60}
+                        onComplete={() => submitAssessment(true)}
+                    />
+
+                </div>
+
+            </div>
+
+            {warning && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+
+                    <div className="bg-white rounded-xl shadow-xl w-[420px] p-6">
+
+                        <h2 className="text-2xl font-bold text-red-600">
+                            Assessment Warning
+                        </h2>
+
+                        <p className="mt-4 whitespace-pre-line text-gray-700">
+                            {warning}
+                        </p>
+
+                        {violations < MAX_VIOLATIONS && (
+                            <button
+                                onClick={async () => {
+                                    try {
+                                        if (!document.fullscreenElement) {
+                                            await document.documentElement.requestFullscreen();
+                                        }
+                                        setWarning("");
+                                    } catch (err) {
+                                        console.error(err);
+                                    }
+                                }}
+                                className="mt-6 w-full bg-red-600 hover:bg-red-700 text-white py-3 rounded-lg"
+                            >
+                                Return to Full Screen
+                            </button>
+                        )}
+
+                    </div>
+
+                </div>
+            )}
 
             <div className="grid grid-cols-12 gap-6">
 
@@ -178,10 +326,14 @@ export default function AssessmentTest() {
 
                             </h2>
 
+                            {/* <div className="text-red-600 font-semibold">
+                                Remaining Attempts: {MAX_VIOLATIONS - violations}
+                            </div>
+
                             <Timer
                                 minutes={assessment?.duration || 60}
                                 onComplete={() => submitAssessment(true)}
-                            />
+                            /> */}
 
                         </div>
 

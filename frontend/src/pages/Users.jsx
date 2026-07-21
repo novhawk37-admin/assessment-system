@@ -61,7 +61,10 @@ export default function UsersPage() {
 
   return (
     <DashboardLayout>
-      <Topbar title="Users" subtitle="Manage everyone on the NovHawk platform." />
+      <Topbar title="Users"
+        subtitle="Manage everyone on the NovHawk platform."
+        showBack
+      />
 
       {usingMock && (
         <div className="mb-5 px-4 py-2.5 rounded-xl bg-orange-50 text-accent-orange text-sm font-medium">

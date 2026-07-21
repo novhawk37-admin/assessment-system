@@ -69,7 +69,10 @@ export default function Tasks() {
 
   return (
     <DashboardLayout>
-      <Topbar title={isAdmin ? 'All Tasks' : 'My Tasks'} subtitle="Track and manage tasks in one place." />
+      <Topbar title={isAdmin ? 'All Tasks' : 'My Tasks'}
+        subtitle="Track and manage tasks in one place."
+        showBack
+      />
 
       {usingMock && (
         <div className="mb-5 px-4 py-2.5 rounded-xl bg-orange-50 text-accent-orange text-sm font-medium">

@@ -28,22 +28,22 @@ export default function AddAssessment() {
     }, [id]);
 
     async function loadAssessment() {
-    try {
-        const res = await client.get(`/api/assessments/${id}`);
+        try {
+            const res = await client.get(`/api/assessments/${id}`);
 
-        setAssessment({
-            title: res.data.title,
-            description: res.data.description,
-            duration: res.data.duration,
-            status: res.data.status,
-        });
+            setAssessment({
+                title: res.data.title,
+                description: res.data.description,
+                duration: res.data.duration,
+                status: res.data.status,
+            });
 
-        setQuestions(res.data.questions || [emptyQuestion()]);
+            setQuestions(res.data.questions || [emptyQuestion()]);
 
-    } catch (err) {
-        console.error(err);
+        } catch (err) {
+            console.error(err);
+        }
     }
-}
 
     async function loadUsers() {
         try {
@@ -142,16 +142,28 @@ export default function AddAssessment() {
 
             // Save Questions
             for (const q of questions) {
-                await client.post("/api/questions", {
-                    assessment_id: assessmentId,
-                    question: q.question,
-                    option_a: q.option_a,
-                    option_b: q.option_b,
-                    option_c: q.option_c,
-                    option_d: q.option_d,
-                    correct_answer: q.correct_answer,
-                    marks: Number(q.marks),
-                });
+                if (q.id) {
+                    await client.put(`/api/questions/${q.id}`, {
+                        question: q.question,
+                        option_a: q.option_a,
+                        option_b: q.option_b,
+                        option_c: q.option_c,
+                        option_d: q.option_d,
+                        correct_answer: q.correct_answer,
+                        marks: Number(q.marks),
+                    });
+                } else {
+                    await client.post("/api/questions", {
+                        assessment_id: assessmentId,
+                        question: q.question,
+                        option_a: q.option_a,
+                        option_b: q.option_b,
+                        option_c: q.option_c,
+                        option_d: q.option_d,
+                        correct_answer: q.correct_answer,
+                        marks: Number(q.marks),
+                    });
+                }
             }
 
             // Assign Users
@@ -191,6 +203,7 @@ export default function AddAssessment() {
                         ? "Update assessment and questions"
                         : "Create assessment and add questions"
                 }
+                showBack
             />
 
             {/* Assessment Details */}

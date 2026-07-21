@@ -294,9 +294,9 @@ export default function AssessmentResult() {
                   px: 5,
                   textTransform: "none",
                 }}
-                onClick={() => navigate("/dashboard")}
+                onClick={() => navigate("/assessments")}
               >
-                Back to Dashboard
+                Back to Assessment
               </Button>
 
               <Button
