@@ -15,7 +15,7 @@ router = APIRouter(prefix="/api/tasks", tags=["tasks"])
 
 
 @router.post("/{task_id}/submit")
-async def submit_task(
+def submit_task(
     task_id: int,
     github_link: str = Form(...),
     file: UploadFile = File(None),
@@ -37,7 +37,7 @@ async def submit_task(
 
     # Save image as Base64
     if file:
-        contents = await file.read()
+        contents = file.read()
 
         encoded = base64.b64encode(contents).decode("utf-8")
 
