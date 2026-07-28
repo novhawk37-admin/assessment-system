@@ -166,6 +166,7 @@ export default function Tasks() {
               {isAdmin && <th className="text-left px-5 py-3 font-semibold">Assignee</th>}
               <th className="text-left px-5 py-3 font-semibold">Due Date</th>
               <th className="text-left px-5 py-3 font-semibold">Status</th>
+              <th className="text-left px-5 py-3 font-semibold">Screenshot</th>
               <th className="px-5 py-3"></th>
             </tr>
           </thead>
