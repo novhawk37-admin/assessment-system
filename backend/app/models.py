@@ -88,6 +88,8 @@ class Task(Base):
     assignee_id = Column(Integer, ForeignKey("novhawk_assessment.users.id"), nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
     completed_at = Column(DateTime, nullable=True)
+    github_link = Column(Text, nullable=True)
+    upload_image = Column(Text, nullable=True)
 
     assignee = relationship("User", back_populates="tasks")
 

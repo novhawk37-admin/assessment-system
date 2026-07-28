@@ -70,6 +70,11 @@ class TaskOut(BaseModel):
     due_date: Optional[datetime] = None
     assignee_id: Optional[int] = None
     assignee_name: Optional[str] = None
+
+    upload_image: Optional[str] = None
+    github_link: Optional[str] = None
+    completed_at: Optional[datetime] = None
+
     created_at: datetime
 
     class Config:
