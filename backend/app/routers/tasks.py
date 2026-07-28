@@ -13,11 +13,6 @@ from app.auth import get_current_user, require_admin
 
 router = APIRouter(prefix="/api/tasks", tags=["tasks"])
 
-
-@router.get("/debug-submit")
-def debug_submit():
-    return {"route": "loaded"}
-
 @router.post("/{task_id}/submit")
 def submit_task(
     task_id: int,
