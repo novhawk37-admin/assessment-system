@@ -275,7 +275,7 @@ export default function Tasks() {
                 <div className="space-y-3">
 
                   <label className="block text-sm font-semibold">
-                    Upload Project
+                    Upload Screenshot
                   </label>
 
                   <motion.div
@@ -296,7 +296,7 @@ export default function Tasks() {
                     />
 
                     <h3 className="font-semibold text-lg">
-                      Drag & Drop your project
+                      Drag & Drop your Image
                     </h3>
 
                     <p className="text-gray-500 mt-2">
