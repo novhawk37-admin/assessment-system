@@ -255,10 +255,10 @@ def get_assessment_result(
 
     percentage = (
         round(
-            (user_assessment.score / assessment.total_marks) * 100,
+            (user_assessment.correct_answers  / assessment.total_questions) * 100,
             2
         )
-        if assessment.total_marks > 0
+        if assessment.total_questions > 0
         else 0
     )
 
